@@ -73,12 +73,10 @@ def ucitaj_iz_csv_fajla(putanja):
 def upisi_u_csv(putanja, lista_recnika):
     try:
         with open(putanja, "w", newline='') as fobj:
-            header = tuple(lista_recnika[0].keys())
-            csv_writer = csv.DictWriter(fobj, fieldnames=header)
+            csv_writer = csv.DictWriter(fobj, fieldnames=lista_recnika[0])
             csv_writer.writeheader()
 
-            for podaci in lista_recnika:
-                csv_writer.writerow(podaci)
+            csv_writer.writerows(lista_recnika)
     except OSError as ose:
         stderr.write(f"Greska pri upisu podataka u fajl {putanja} \n {ose}\n")
 

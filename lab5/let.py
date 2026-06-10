@@ -42,7 +42,7 @@ class Let:
             raise ValueError(f"Putnik {novi_putnik.ime}:{novi_putnik.pasos} je već dodat!")
 
         if not novi_putnik.covid_bezbedan:
-            raise ValueError(f"Putnik {novi_putnik.ime}:{novi_putnik.pasos} nije bezbedan!")
+            raise ValueError(f"Putnik {novi_putnik.ime}:{novi_putnik.pasos} nije COVID bezbedan!")
 
         self.putnici.append(novi_putnik)
 

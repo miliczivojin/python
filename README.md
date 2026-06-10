@@ -4,4 +4,4 @@ Repozitorijum sa materijalima i rešenjima zadataka iz vežbi (Python, Pandas i 
 
 - Python
 - Pandas
-- Matplot lib
+- Matplotlib

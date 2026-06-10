@@ -6,21 +6,30 @@ class Putnik:
     def __init__(self, ime, drzava, pasos, covid_bezbedan=False):
         self.ime = ime
         self.drzava = drzava
-        self.pasos = pasos
         self.covid_bezbedan = covid_bezbedan
+
+        self.__pasos = None
+        self.pasos = pasos
 
     @property
     def pasos(self):
-        if not hasattr(self, '_Putnik__pasos'):
-            self.__pasos = None
         return self.__pasos
 
     @pasos.setter
     def pasos(self, value):
-        if isinstance(value, str) and len(value) == 6 and value.isdigit():
-            self.__pasos = value
-        elif isinstance(value, int) and 100000 <= value <= 999999:
-            self.__pasos = str(value)
+        if isinstance(value, int):
+            value = str(value)
+
+        if not isinstance(value, str):
+            raise TypeError("Očekivan je tip int ili str za pasos!")
+
+        if not value.isdigit():
+            raise ValueError("Broj pasosa mora da se sastoji samo od cifara!")
+
+        if len(value) != 6:
+            raise ValueError("Broj pasosa mora da ima 6 cifara!")
+
+        self.__pasos = value
 
     def __str__(self):
         putnik_str = "\n--Putnik\n"
@@ -31,18 +40,27 @@ class Putnik:
         return putnik_str
 
     def azuriraj_covid_bezbedan(self, tip_uverenja, datum_uverenja):
-        if not isinstance(tip_uverenja, str) or tip_uverenja.lower() not in ['vakcinacija', 'negativan_test']:
-            stderr.write("Pogresna vrednost za tip uverenja, promena statusa ne moze biti izvrsena !")
-            return
+        if not isinstance(tip_uverenja, str):
+            raise TypeError("Očekivan je str za tip uverenja!")
+
+        if tip_uverenja.lower() not in ['vakcinacija', 'negativan_test']:
+            raise ValueError("Pogrešna vrednost za tip uverenja!")
+
         if not isinstance(datum_uverenja, (datetime, str)):
-            stderr.write("Pogresna vrednost za datum uverenja, promena statusa ne moze biti izvrsena !")
-            return
+            raise TypeError("Očekivan je str ili datetime za datum uverenja!")
+
         if isinstance(datum_uverenja, str):
-            datum_uverenja = datetime.strptime(datum_uverenja, "%d/%m/%Y")
+            try:
+                datum_uverenja = datetime.strptime(datum_uverenja, "%d/%m/%Y")
+            except ValueError:
+                raise ValueError("Neispravan format datuma uverenja!")
 
         delta = datetime.now() - datum_uverenja
-        self.covid_bezbedan = (tip_uverenja.lower() == "vakcinacija" and delta.days < 365) or (
-                tip_uverenja.lower() == "negativan_test" and delta.days < 3)
+
+        if tip_uverenja == "vakcinacija":
+            self.covid_bezbedan = delta.days < 365
+        else:
+            self.covid_bezbedan = delta.days < 3
 
     @classmethod
     def from_string(cls, putnik_str):
